@@ -1,4 +1,4 @@
-from db_connection import get_connection
+from .db_connection import get_connection
 
 def fetch_suppliers():
     conn = get_connection()

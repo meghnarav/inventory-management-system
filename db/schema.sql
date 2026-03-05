@@ -40,7 +40,7 @@ CREATE TABLE Employee (
     role VARCHAR(50)
 );
 
-CREATE TABLE Perma_Employee (
+CREATE TABLE Permanent_Employee (
     employee_id INT PRIMARY KEY,
     monthly_salary DECIMAL(10,2),
     benefits VARCHAR(200),
