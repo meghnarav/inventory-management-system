@@ -1,14 +1,12 @@
 from .db_connection import get_connection
 import mysql.connector
 
-# ======================
-# READ OPERATIONS (FETCH)
-# ======================
+# --- READ OPERATIONS ---
 
 def fetch_suppliers():
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM Supplier")
+    cursor.execute("SELECT Supplier_id, supplier_name, contact_email, phone_number FROM SUPPLIER")
     data = cursor.fetchall()
     cursor.close()
     conn.close()
@@ -17,25 +15,26 @@ def fetch_suppliers():
 def fetch_products():
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
-    # Joining with Supplier to show where the product comes from
     cursor.execute("""
-        SELECT p.product_id, p.product_name, p.category, s.supplier_name 
-        FROM Product p
-        JOIN Supplier s ON p.supplier_id = s.supplier_id
+        SELECT p.Product_id, p.Product_name, p.category, p.unit_price, s.supplier_name 
+        FROM PRODUCT p
+        JOIN SUPPLIER s ON p.supplier_id = s.Supplier_id
     """)
-    rows = cursor.fetchall()
+    data = cursor.fetchall()
     cursor.close()
     conn.close()
-    return rows
+    return data
 
 def fetch_inventory():
     conn = get_connection()
+    cursor = conn.close() # Fixed variable collision
+    conn = get_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("""
-        SELECT i.product_id, p.product_name, i.warehouse_id, w.location, i.quantity
-        FROM Inventory i
-        JOIN Product p ON i.product_id = p.product_id
-        JOIN Warehouse w ON i.warehouse_id = w.warehouse_id
+        SELECT i.Product_id, p.Product_name, i.warehouse_id, w.Location, i.quantity
+        FROM INVENTORY i
+        JOIN PRODUCT p ON i.Product_id = p.Product_id
+        JOIN WAREHOUSE w ON i.warehouse_id = w.warehouse_id
     """)
     data = cursor.fetchall()
     cursor.close()
@@ -46,13 +45,13 @@ def fetch_stock_transactions():
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("""
-        SELECT st.transaction_id, st.transaction_date, st.transaction_type, st.quantity,
-               p.product_name, w.location, e.name AS employee_name
-        FROM Stock_Transaction st
-        JOIN Product p ON st.product_id = p.product_id
-        JOIN Warehouse w ON st.warehouse_id = w.warehouse_id
-        JOIN Employee e ON st.employee_id = e.employee_id
-        ORDER BY st.transaction_date DESC
+        SELECT st.transaction_id, st.Transaction_date, st.transaction_type, st.quantity,
+               p.Product_name, w.Location, e.name AS employee_name
+        FROM STOCK_TRANSACTION st
+        JOIN PRODUCT p ON st.product_id = p.Product_id
+        JOIN WAREHOUSE w ON st.warehouse_id = w.warehouse_id
+        JOIN EMPLOYEE e ON st.employee_id = e.Employee_id
+        ORDER BY st.Transaction_date DESC
     """)
     data = cursor.fetchall()
     cursor.close()
@@ -62,74 +61,51 @@ def fetch_stock_transactions():
 def fetch_warehouses():
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT warehouse_id, location FROM Warehouse")
+    cursor.execute("SELECT warehouse_id, Location, capacity FROM WAREHOUSE")
     data = cursor.fetchall()
     cursor.close()
     conn.close()
     return data
 
-# ======================
-# WRITE OPERATIONS (CRUD)
-# ======================
+def fetch_employees():
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT Employee_id, name, role FROM EMPLOYEE")
+    data = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return data
 
-def add_stock_transaction(product_id, warehouse_id, employee_id, quantity, transaction_type):
-    """
-    Handles a stock movement. 
-    1. Records the transaction in Stock_Transaction.
-    2. Updates or Inserts the quantity in the Inventory table.
-    Uses a Database Transaction to ensure data integrity.
-    """
+# --- WRITE OPERATIONS (The "Functional" Part) ---
+
+def add_stock_movement(prod_id, wh_id, emp_id, qty, t_type):
     conn = get_connection()
     cursor = conn.cursor()
-    
     try:
-        # Start Transaction
         conn.start_transaction()
 
-        # 1. Insert the log entry
-        insert_query = """
-            INSERT INTO Stock_Transaction (product_id, warehouse_id, employee_id, quantity, transaction_type, transaction_date)
-            VALUES (%s, %s, %s, %s, %s, NOW())
+        # 1. Insert into STOCK_TRANSACTION
+        query_ts = """
+            INSERT INTO STOCK_TRANSACTION 
+            (Transaction_date, transaction_type, product_id, quantity, warehouse_id, employee_id)
+            VALUES (NOW(), %s, %s, %s, %s, %s)
         """
-        cursor.execute(insert_query, (product_id, warehouse_id, employee_id, quantity, transaction_type))
+        cursor.execute(query_ts, (t_type, prod_id, qty, wh_id, emp_id))
 
-        # 2. Update Inventory
-        # We use 'ON DUPLICATE KEY UPDATE' to handle the case where the product/warehouse 
-        # combo doesn't exist yet in the Inventory table.
-        
-        # Determine multiplier (positive for receiving, negative for removal)
-        adj_quantity = int(quantity) if transaction_type.upper() == 'IN' else -int(quantity)
-
-        update_inventory_query = """
-            INSERT INTO Inventory (product_id, warehouse_id, quantity)
+        # 2. Update INVENTORY (UPSERT logic)
+        adj_qty = int(qty) if t_type == 'IN' else -int(qty)
+        query_inv = """
+            INSERT INTO INVENTORY (Product_id, warehouse_id, quantity)
             VALUES (%s, %s, %s)
             ON DUPLICATE KEY UPDATE quantity = quantity + %s
         """
-        cursor.execute(update_inventory_query, (product_id, warehouse_id, adj_quantity, adj_quantity))
+        cursor.execute(query_inv, (prod_id, wh_id, adj_qty, adj_qty))
 
-        # Commit changes
-        conn.commit()
-        return {"status": "success", "message": "Transaction recorded successfully"}
-
-    except mysql.connector.Error as err:
-        conn.rollback()
-        print(f"Error: {err}")
-        return {"status": "error", "message": str(err)}
-    
-    finally:
-        cursor.close()
-        conn.close()
-
-def add_new_product(name, category, supplier_id):
-    conn = get_connection()
-    cursor = conn.cursor()
-    try:
-        query = "INSERT INTO Product (product_name, category, supplier_id) VALUES (%s, %s, %s)"
-        cursor.execute(query, (name, category, supplier_id))
         conn.commit()
         return True
     except Exception as e:
-        print(e)
+        conn.rollback()
+        print(f"Error: {e}")
         return False
     finally:
         cursor.close()

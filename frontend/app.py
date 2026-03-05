@@ -1,172 +1,151 @@
+import sys
+import os
+import pandas as pd
 import dash
 from dash import html, dcc, dash_table, Input, Output, State, callback
 import dash_bootstrap_components as dbc
-import pandas as pd
 import plotly.express as px
-import sys
-import os
 
-# Adds the root directory (swims) to the python path
+# Path fix for local running
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
 from backend import queries
-# ... rest of your imports
 
-# Initialize App with a professional Slate theme
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SLATE])
-app.title = "SWIMS | Inventory Management"
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
+app.title = "SWIMS Management"
 
 # ======================
-# DATA FETCHING WRAPPER
-# ======================
-def get_data():
-    products = pd.DataFrame(queries.fetch_products())
-    suppliers = pd.DataFrame(queries.fetch_suppliers())
-    inventory = pd.DataFrame(queries.fetch_inventory())
-    transactions = pd.DataFrame(queries.fetch_stock_transactions())
-    return products, suppliers, inventory, transactions
-
-# ======================
-# UI COMPONENTS
-# ======================
-
-def create_kpi_card(title, value, color="primary"):
-    return dbc.Card([
-        dbc.CardBody([
-            html.H5(title, className="card-title text-light"),
-            html.H2(value, className=f"text-{color} font-weight-bold"),
-        ])
-    ], style={"margin": "10px"})
-
-# The Modal Form for adding stock
-modal_form = dbc.Modal([
-    dbc.ModalHeader(dbc.ModalTitle("Log Stock Movement")),
-    dbc.ModalBody([
-        dbc.Label("Select Product"),
-        dcc.Dropdown(id='prod-select', placeholder="Choose Product..."),
-        html.Br(),
-        dbc.Label("Quantity"),
-        dbc.Input(id='qty-input', type='number', placeholder="Enter amount..."),
-        html.Br(),
-        dbc.Label("Transaction Type"),
-        dcc.Dropdown(
-            id='type-select',
-            options=[{'label': 'Receive', 'value': 'IN'}, {'label': 'Remove', 'value': 'OUT'}],
-            value='IN'
-        ),
-    ]),
-    dbc.ModalFooter(
-        dbc.Button("Submit Transaction", id="submit-val", color="success", n_clicks=0)
-    ),
-], id="modal-form", is_open=False)
-
-# ======================
-# LAYOUT
+# UI LAYOUT COMPONENTS
 # ======================
 
 sidebar = html.Div([
-    html.H2("SWIMS", className="display-4 text-primary"),
+    html.H2("SWIMS", className="display-6 text-primary"),
+    html.P("Warehouse System", className="text-muted"),
     html.Hr(),
-    html.P("Supplier-Warehouse Inventory System", className="lead"),
     dbc.Nav([
         dbc.NavLink("Dashboard", href="/", active="exact"),
-        dbc.NavLink("Inventory List", href="/inventory", active="exact"),
-        dbc.NavLink("Suppliers", href="/suppliers", active="exact"),
+        dbc.NavLink("Inventory Control", href="#", active="exact"),
     ], vertical=True, pills=True),
     html.Hr(),
-    dbc.Button("Add Stock +", id="open-modal-btn", color="success", className="w-100")
-], style={"padding": "2rem", "height": "100vh", "backgroundColor": "#1a1a1a"})
+    dbc.Button("Log Stock Move", id="open-modal-btn", color="success", className="w-100")
+], style={"padding": "2rem", "height": "100vh", "backgroundColor": "#f8f9fa", "position": "fixed", "width": "16rem"})
+
+modal = dbc.Modal([
+    dbc.ModalHeader(dbc.ModalTitle("Stock Transaction")),
+    dbc.ModalBody([
+        dbc.Row([
+            dbc.Col([
+                dbc.Label("Product"),
+                dcc.Dropdown(id='m-prod', placeholder="Select..."),
+            ], width=12),
+            dbc.Col([
+                dbc.Label("Warehouse"),
+                dcc.Dropdown(id='m-wh', placeholder="Select..."),
+            ], width=6, className="mt-3"),
+            dbc.Col([
+                dbc.Label("Employee"),
+                dcc.Dropdown(id='m-emp', placeholder="Select..."),
+            ], width=6, className="mt-3"),
+            dbc.Col([
+                dbc.Label("Quantity"),
+                dbc.Input(id='m-qty', type='number', min=1),
+            ], width=6, className="mt-3"),
+            dbc.Col([
+                dbc.Label("Type"),
+                dbc.Select(id='m-type', options=[
+                    {"label": "Receive (IN)", "value": "IN"},
+                    {"label": "Dispatch (OUT)", "value": "OUT"}
+                ], value="IN"),
+            ], width=6, className="mt-3"),
+        ])
+    ]),
+    dbc.ModalFooter(dbc.Button("Save to Database", id="save-db-btn", color="primary"))
+], id="modal-move", is_open=False)
 
 content = html.Div([
-    # KPI Row
-    dbc.Row(id="kpi-container"),
-    
-    # Main Tabs
-    dbc.Tabs([
-        dbc.Tab(label="Inventory Overview", children=[
-            dbc.Row([
-                dbc.Col(dcc.Graph(id='inv-graph'), width=6),
-                dbc.Col(dcc.Graph(id='trans-graph'), width=6),
-            ]),
-            html.H3("Live Stock Levels", className="mt-4"),
-            html.Div(id="inventory-table-container")
-        ]),
-        dbc.Tab(label="Transaction Logs", children=[
-            html.H3("Movement History", className="mt-4"),
-            html.Div(id="transaction-table-container")
-        ]),
-    ])
-], style={"padding": "2rem"})
-
-app.layout = dbc.Container([
+    dbc.Row(id="kpi-row", className="mb-4"),
     dbc.Row([
-        dbc.Col(sidebar, width=3, style={"padding": "0"}),
-        dbc.Col(content, width=9),
+        dbc.Col(dcc.Graph(id='graph-inv'), width=7),
+        dbc.Col(dcc.Graph(id='graph-trans'), width=5),
     ]),
-    modal_form,
-    dcc.Interval(id='interval-component', interval=10*1000, n_intervals=0) # Refresh every 10s
-], fluid=True)
+    html.H4("Inventory Master List", className="mt-4"),
+    html.Div(id="table-inventory"),
+], style={"marginLeft": "18rem", "padding": "2rem"})
+
+app.layout = html.Div([sidebar, content, modal, dcc.Interval(id='refresher', interval=30000)])
 
 # ======================
-# CALLBACKS (The "Functional" Part)
+# CALLBACKS
 # ======================
 
-# 1. Toggle Modal
 @app.callback(
-    Output("modal-form", "is_open"),
-    [Input("open-modal-btn", "n_clicks"), Input("submit-val", "n_clicks")],
-    [State("modal-form", "is_open")]
+    Output("modal-move", "is_open"),
+    [Input("open-modal-btn", "n_clicks"), Input("save-db-btn", "n_clicks")],
+    [State("modal-move", "is_open")]
 )
 def toggle_modal(n1, n2, is_open):
-    if n1 or n2:
-        return not is_open
+    if n1 or n2: return not is_open
     return is_open
 
-# 2. Main Data Update (Triggered by interval or button click)
 @app.callback(
-    [Output("kpi-container", "children"),
-     Output("inventory-table-container", "children"),
-     Output("transaction-table-container", "children"),
-     Output("inv-graph", "figure"),
-     Output("trans-graph", "figure"),
-     Output("prod-select", "options")],
-    [Input("interval-component", "n_intervals"), Input("submit-val", "n_clicks")]
+    Output("save-db-btn", "disabled"),
+    Input("save-db-btn", "n_clicks"),
+    [State("m-prod", "value"), State("m-wh", "value"), State("m-emp", "value"), 
+     State("m-qty", "value"), State("m-type", "value")]
 )
-def update_dashboard(n, n_clicks):
-    products_df, suppliers_df, inventory_df, transactions_df = get_data()
+def handle_save(n_clicks, p, w, e, q, t):
+    if n_clicks:
+        queries.add_stock_movement(p, w, e, q, t)
+    return False
 
-    # KPI Calculation
+@app.callback(
+    [Output("kpi-row", "children"),
+     Output("table-inventory", "children"),
+     Output("graph-inv", "figure"),
+     Output("graph-trans", "figure"),
+     Output("m-prod", "options"),
+     Output("m-wh", "options"),
+     Output("m-emp", "options")],
+    [Input("refresher", "n_intervals"), Input("save-db-btn", "n_clicks")]
+)
+def refresh_data(n, n_save):
+    # Fetch dataframes
+    df_p = pd.DataFrame(queries.fetch_products())
+    df_i = pd.DataFrame(queries.fetch_inventory())
+    df_t = pd.DataFrame(queries.fetch_stock_transactions())
+    df_w = pd.DataFrame(queries.fetch_warehouses())
+    df_e = pd.DataFrame(queries.fetch_employees())
+
+    # KPI Cards
     kpis = [
-        dbc.Col(create_kpi_card("Total SKUs", len(products_df))),
-        dbc.Col(create_kpi_card("Total Suppliers", len(suppliers_df), "info")),
-        dbc.Col(create_kpi_card("Stock on Hand", inventory_df['quantity'].sum(), "success")),
+        dbc.Col(dbc.Card(dbc.CardBody([html.H6("Total Items"), html.H3(len(df_p))]), color="primary", outline=True)),
+        dbc.Col(dbc.Card(dbc.CardBody([html.H6("Total Stock"), html.H3(df_i['quantity'].sum())]), color="success", outline=True)),
+        dbc.Col(dbc.Card(dbc.CardBody([html.H6("Warehouses"), html.H3(len(df_w))]), color="info", outline=True)),
     ]
 
     # Tables
-    inv_table = dash_table.DataTable(
-        data=inventory_df.to_dict('records'),
-        columns=[{"name": i, "id": i} for i in inventory_df.columns],
-        filter_action="native", sort_action="native", page_size=10,
-        style_header={'backgroundColor': 'rgb(30, 30, 30)', 'color': 'white'},
-        style_data={'backgroundColor': 'rgb(50, 50, 50)', 'color': 'white'}
+    tbl = dash_table.DataTable(
+        data=df_i.to_dict('records'),
+        columns=[{"name": i, "id": i} for i in df_i.columns],
+        page_size=10, style_table={'overflowX': 'auto'},
+        filter_action="native", sort_action="native"
     )
+
+    # Charts
+    fig_i = px.bar(df_i, x="Location", y="quantity", color="Product_name", title="Stock by Location")
     
-    trans_table = dash_table.DataTable(
-        data=transactions_df.to_dict('records'),
-        columns=[{"name": i, "id": i} for i in transactions_df.columns],
-        page_size=10,
-        style_header={'backgroundColor': 'rgb(30, 30, 30)', 'color': 'white'},
-        style_data={'backgroundColor': 'rgb(50, 50, 50)', 'color': 'white'}
-    )
+    # Check if transaction date exists for line chart
+    if not df_t.empty:
+        df_t["Transaction_date"] = pd.to_datetime(df_t["Transaction_date"])
+        fig_t = px.line(df_t, x="Transaction_date", y="quantity", color="transaction_type", title="Movement Trends")
+    else:
+        fig_t = px.scatter(title="No transactions yet")
 
-    # Graphs
-    fig1 = px.bar(inventory_df, x="location", y="quantity", color="product_name", template="plotly_dark")
-    fig2 = px.line(transactions_df, x="timestamp", y="quantity", color="transaction_type", template="plotly_dark")
+    # Options
+    opt_p = [{"label": r.Product_name, "value": r.Product_id} for r in df_p.itertuples()]
+    opt_w = [{"label": r.Location, "value": r.warehouse_id} for r in df_w.itertuples()]
+    opt_e = [{"label": r.name, "value": r.Employee_id} for r in df_e.itertuples()]
 
-    # Dropdown Options
-    dropdown_options = [{'label': row['product_name'], 'value': row['id']} for _, row in products_df.iterrows()]
-
-    return kpis, inv_table, trans_table, fig1, fig2, dropdown_options
+    return kpis, tbl, fig_i, fig_t, opt_p, opt_w, opt_e
 
 if __name__ == "__main__":
-    app.run(debug=True, port=8050)
+    app.run_server(debug=True, port=8050)
