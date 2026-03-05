@@ -169,4 +169,4 @@ def update_dashboard(n, n_clicks):
     return kpis, inv_table, trans_table, fig1, fig2, dropdown_options
 
 if __name__ == "__main__":
-    app.run_server(debug=True, port=8050)
+    app.run(debug=True, port=8050)
