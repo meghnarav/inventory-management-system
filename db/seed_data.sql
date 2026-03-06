@@ -9,38 +9,79 @@ INSERT INTO Supplier (supplier_id, supplier_name, contact_email, phone_number) V
 (7,'Glacier Goods','team@glaciergoods.com','9000022222'),
 (8,'Aurora Dairy','service@auroradairy.com','9000033333'),
 (9,'Snowflake Distributors','info@snowflake.com','9000044444'),
-(10,'Evercold Logistics','support@evercold.com','9000055555');
+(10,'Evercold Logistics','support@evercold.com','9000055555')
+(11,'Crystal Ice Co','logistics@crystalice.com','9000066666'),
+(12,'Velvet Creamery','orders@velvetcream.com','9000077777'),
+(13,'Island Sorbets','aloha@islandsorbets.com','9000088888'),
+(14,'Mountain Dairy','admin@mountaindairy.com','9000099999'),
+(15,'Urban Chill','contact@urbanchill.com','9111122222');
 
 -- WAREHOUSES
 INSERT INTO Warehouse (warehouse_id, location, capacity) VALUES
 (1,'Chennai',10000),
-(2,'Bangalore',8000),
+(2,'Bengaluru',8000),
 (3,'Hyderabad',7500),
 (4,'Mumbai',12000),
 (5,'Delhi',9000),
-(6,'Pune',6500),
+(6,'Trichy',6500),
 (7,'Kolkata',7000),
-(8,'Ahmedabad',6000);
+(8,'Ahmedabad',6000),
+(9,'Madurai',5500),
+(10,'Tirunelveli',11000),
+(11,'Lucknow',6800),
+(12,'Chandigarh',7200),
+(13,'Indore',5800),
+(14,'Kochi',6200),
+(15,'Salem',6000);
 
 -- EMPLOYEES
 INSERT INTO Employee (employee_id, name, role) VALUES
-(1,'Rahul Sharma','Manager'),
-(2,'Priya Iyer','Supervisor'),
-(3,'Amit Verma','Operator'),
-(4,'Sneha Kapoor','Operator'),
-(5,'Karan Mehta','Warehouse Staff'),
-(6,'Anita Rao','Manager'),
-(7,'Vikram Singh','Operator'),
-(8,'Meera Joshi','Warehouse Staff'),
-(9,'Rohit Nair','Supervisor'),
-(10,'Divya Kulkarni','Operator');
+(1,'Sanya Malhotra','Manager'),
+(2,'Smriti Mandanna','Supervisor'),
+(3,'Shreyas Iyer','Operator'),
+(4,'Shahid Kapoor','Operator'),
+(5,'Madhavan Ranganathan','Warehouse Staff'),
+(6,'Tamannaah Bhatia','Manager'),
+(7,'Ahaan Panday','Operator'),
+(8,'Wamiqa Gabbi','Warehouse Staff'),
+(9,'Trisha Krishnan','Supervisor'),
+(10,'Vijay Deverakonda','Operator'),
+(11,'Rashmika Mandanna','Warehouse Staff'),
+(12,'Deepika Padukone','Manager'),
+(13,'Sai Pallavi','Operator'),
+(14,'Pooja Hegde','Supervisor'),
+(15,'Dhruv Vikram','Warehouse Staff'),
+(16, 'Rana Daggubati', 'Warehouse Staff'),
+(17, 'Anushka Shetty', 'Manager'),
+(18, 'Allu Arjun', 'Supervisor'),
+(19, 'Fahadh Faasil', 'Operator'),
+(20, 'Nayanthara Kurian', 'Manager'),
+(21, 'Dulquer Salmaan', 'Operator'),
+(22, 'Keerthy Suresh', 'Supervisor'),
+(23, 'Suriya Sivakumar', 'Warehouse Staff'),
+(24, 'Jyothika Saravanan', 'Manager'),
+(25, 'Karthi Sivakumar', 'Operator'),
+(26, 'Sobhita Dhulipala', 'Supervisor'),
+(27, 'Nani Ghanta', 'Operator');
 
 -- PERMANENT EMP
 INSERT INTO Permanent_Employee (employee_id, monthly_salary, benefits) VALUES
 (1,60000,'Health Insurance'),
 (2,50000,'Health Insurance'),
 (6,65000,'Health + Bonus'),
-(9,52000,'Health Insurance');
+(9,52000,'Health Insurance'),
+(12,68000,'Full Suite'),
+(14,54000,'Health Insurance'),
+(11,48000,'Health Insurance'),
+(13,49000,'Health Insurance'),
+(15,47000,'Dental + Health'),
+(17, 70000, 'Full Suite'),
+(18, 55000, 'Health Insurance'),
+(20, 72000, 'Full Suite'),
+(22, 53000, 'Health Insurance'),
+(24, 69000, 'Full Suite'),
+(26, 54000, 'Health Insurance');
+
 
 -- CONTRACT EMP
 INSERT INTO Contract_Employee (employee_id, hourly_rate, contract_end_date) VALUES
@@ -49,7 +90,16 @@ INSERT INTO Contract_Employee (employee_id, hourly_rate, contract_end_date) VALU
 (5,300,'2026-09-30'),
 (7,320,'2026-11-30'),
 (8,310,'2026-08-31'),
-(10,330,'2027-01-31');
+(10,330,'2027-01-31'),
+(11,280,'2026-07-31'),
+(13,340,'2026-12-15'),
+(15,290,'2026-06-30'),
+(16, 290, '2026-12-01'),
+(19, 310, '2026-11-15'),
+(21, 325, '2027-02-28'),
+(23, 305, '2026-08-20'),
+(25, 315, '2026-10-10'),
+(27, 340, '2026-12-31');
 
 -- PRODUCTS
 INSERT INTO Product (product_id, product_name, supplier_id, category, unit_price) VALUES
@@ -67,7 +117,17 @@ INSERT INTO Product (product_id, product_name, supplier_id, category, unit_price
 (12,'Lemon Sorbet',7,'Sorbet',115),
 (13,'Berry Blast Stick',8,'Ice Cream',125),
 (14,'Almond Crunch Bar',9,'Ice Cream',150),
-(15,'Sugar-free Vanilla',10,'Diet',130);
+(15,'Sugar-free Vanilla',10,'Diet',130),
+(16,'Black Currant Tub',11,'Ice Cream',180),
+(17,'Tender Coconut',12,'Natural',145),
+(18,'Passion Fruit Pop',13,'Sorbet',95),
+(19,'Rocky Road',14,'Ice Cream',165),
+(20,'Matcha Green Tea',15,'Gelato',190),
+(21, 'Hazelnut Praline', 1, 'Ice Cream', 165),
+(22, 'Lychee Rose Sorbet', 13, 'Sorbet', 120),
+(23, 'Caramel Macchiato', 15, 'Gelato', 175),
+(24, 'Tutti Frutti', 2, 'Traditional', 100),
+(25, 'Dark Chocolate Sea Salt', 11, 'Ice Cream', 155);
 
 -- INVENTORY
 INSERT INTO Inventory (product_id, warehouse_id, quantity) VALUES
@@ -105,7 +165,22 @@ INSERT INTO Inventory (product_id, warehouse_id, quantity) VALUES
 (14,2,75),
 (14,5,95),
 (15,1,60),
-(15,8,55);
+(15,8,55),
+(16,1,200),
+(16,10,450),
+(17,3,180),
+(18,4,300),
+(19,9,110),
+(20,2,85),
+(1,10,600),
+(5,11,150),
+(1,9,200),
+(2,10,150),
+(3,11,100),
+(4,12,80),
+(5,13,120),
+(6,14,90),
+(7,15,110);
 
 -- STOCK TRANSACTIONS
 INSERT INTO Stock_Transaction
@@ -140,4 +215,34 @@ VALUES
 (27,'2026-03-12','OUTWARD',14,25,5,5),
 (28,'2026-03-14','INWARD',15,60,1,6),
 (29,'2026-03-15','OUTWARD',15,10,8,10),
-(30,'2026-03-16','OUTWARD',2,35,4,4);
+(30,'2026-03-16','OUTWARD',2,35,4,4),
+(31,'2026-03-17','INWARD',16,200,1,13),
+(32,'2026-03-18','INWARD',17,180,3,11),
+(33,'2026-03-19','OUTWARD',1,50,1,13),
+(34,'2026-03-20','INWARD',18,300,4,15),
+(35,'2026-03-21','OUTWARD',5,15,5,12),
+(36,'2026-03-22','INWARD',19,110,9,11),
+(37,'2026-03-23','INWARD',20,85,2,14),
+(38,'2026-03-24','OUTWARD',16,25,10,13),
+(39,'2026-03-25','INWARD',1,150,10,12),
+(40,'2026-03-26','OUTWARD',12,10,4,14),
+(41,'2026-03-27','INWARD',20,50,2,14),
+(42,'2026-03-28','OUTWARD',19,10,9,11),
+(43,'2026-03-29','INWARD',18,100,4,13),
+(44,'2026-03-30','OUTWARD',17,20,3,15),
+(45,'2026-03-31','INWARD',16,60,10,12),
+(46,'2026-04-01','OUTWARD',1,40,1,3),
+(47,'2026-04-02','INWARD',2,90,2,7),
+(48,'2026-04-03','OUTWARD',3,15,3,8),
+(49,'2026-04-04','INWARD',4,75,4,4),
+(50,'2026-04-05','OUTWARD',5,20,5,10),
+(51,'2026-04-06','INWARD',21,100,1,19),
+(52,'2026-04-07','INWARD',22,80,14,21),
+(53,'2026-04-08','OUTWARD',21,15,1,25),
+(54,'2026-04-09','INWARD',23,120,2,27),
+(55,'2026-04-10','OUTWARD',22,10,14,19),
+(56,'2026-04-11','INWARD',24,200,10,23),
+(57,'2026-04-12','OUTWARD',24,50,10,16),
+(58,'2026-04-13','INWARD',25,90,12,18),
+(59,'2026-04-14','OUTWARD',25,20,12,21),
+(60,'2026-04-15','OUTWARD',16,30,1,25);
