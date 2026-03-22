@@ -30,6 +30,28 @@ def _ensure_found(ok: bool, entity: str) -> None:
 
 # ---------------------- Read endpoints ---------------------- #
 
+@app.get("/categories", response_model=List[Dict[str, Any]])
+def get_categories() -> List[Dict[str, Any]]:
+    from .db_connection import get_connection
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT category_id, category_name FROM Category")
+    data = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return data
+
+
+@app.get("/roles", response_model=List[Dict[str, Any]])
+def get_roles() -> List[Dict[str, Any]]:
+    from .db_connection import get_connection
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT role_id, role_name FROM Role")
+    data = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return data
 
 @app.get("/suppliers", response_model=List[Dict[str, Any]])
 def get_suppliers() -> List[Dict[str, Any]]:
@@ -59,6 +81,8 @@ def get_inventory() -> List[Dict[str, Any]]:
 @app.get("/transactions", response_model=List[Dict[str, Any]])
 def get_transactions() -> List[Dict[str, Any]]:
     return queries.fetch_stock_transactions()
+
+
 
 
 # ---------------------- Supplier CRUD ---------------------- #

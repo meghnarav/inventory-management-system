@@ -206,12 +206,27 @@ function SimpleCreateForm({ title, fields, endpoint, onCreated }) {
       {fields.map((f) => (
         <div className="form-row" key={f.name}>
           <label>{f.label}</label>
-          <input
-            type={f.type || "text"}
-            value={values[f.name]}
-            onChange={(e) => setField(f.name, e.target.value)}
-            required={f.required}
-          />
+          {f.type === "select" ? (
+            <select
+              value={values[f.name]}
+              onChange={(e) => setField(f.name, e.target.value)}
+              required={f.required}
+            >
+              <option value="">Select</option>
+              {f.options?.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              type={f.type || "text"}
+              value={values[f.name]}
+              onChange={(e) => setField(f.name, e.target.value)}
+              required={f.required}
+            />
+          )}
         </div>
       ))}
       <button type="submit">Create</button>
@@ -227,6 +242,8 @@ export default function App() {
   const { data: suppliers } = usePolling("/suppliers");
   const { data: warehouses } = usePolling("/warehouses");
   const { data: employees } = usePolling("/employees");
+  const { data: categories } = usePolling("/categories");
+  const { data: roles } = usePolling("/roles");
 
   const kpis = useMemo(() => {
     const totalProducts = products.length;
@@ -364,7 +381,7 @@ export default function App() {
             fields={[
               { name: "product_name", label: "Product Name", required: true },
               { name: "supplier_id", label: "Supplier ID", required: true },
-              { name: "category_id", label: "Category ID", type: "select",
+              { name: "category_id", label: "Category ID", type: "select", required: true,
                 options: categories.map(c => ({ value: c.category_id, label: c.category_name }))
               }
             ]}
@@ -374,7 +391,7 @@ export default function App() {
             endpoint="/employees"
             fields={[
               { name: "name", label: "Name", required: true },
-              { name: "role_id", label: "Role", type: "select", 
+              { name: "role_id", label: "Role", type: "select", required: true,
                 options: roles.map(r => ({ value: r.role_id, label: r.role_name}))
               }
             ]}
