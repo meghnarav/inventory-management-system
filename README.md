@@ -132,14 +132,14 @@ SOURCE /seed_data.sql;
 ### 3️⃣ Backend Setup
 
 ```bash
-cd backend
 pip install -r ../requirements.txt
+pip install uvicorn
 ```
 
 Run the backend:
 
 ```bash
-python -m backend.api
+uvicorn backend.api:app --reload
 ```
 
 API runs at: `http://127.0.0.1:8000`
@@ -193,7 +193,7 @@ Frontend runs at: `http://localhost:5173`
 **❌ Module import error**  
 Run backend using:
 ```bash
-python -m backend.api
+uvicorn backend.api:app --reload
 ```
 
 ---
