@@ -236,6 +236,7 @@ function SimpleCreateForm({ title, fields, endpoint, onCreated }) {
 }
 
 export default function App() {
+  const [tab, setTab] = useState("dashboard");
   const { data: products } = usePolling("/products");
   const { data: inventory } = usePolling("/inventory");
   const { data: transactions } = usePolling("/transactions");
@@ -244,6 +245,8 @@ export default function App() {
   const { data: employees } = usePolling("/employees");
   const { data: categories } = usePolling("/categories");
   const { data: roles } = usePolling("/roles");
+  const { data: employeesDetailed } = usePolling("/employees-detailed");
+  const { data: productsDetailed } = usePolling("/products-detailed");
 
   const kpis = useMemo(() => {
     const totalProducts = products.length;
@@ -279,124 +282,109 @@ export default function App() {
     <div className="app-shell">
       <aside className="sidebar">
         <h1>SWIMS</h1>
-        <p className="muted">Supplier-Warehouse Inventory Management</p>
+        <p className="muted">Inventory System</p>
+
+        <nav className="nav">
+          <button onClick={() => setTab("dashboard")}>Dashboard</button>
+          <button onClick={() => setTab("products")}>Products</button>
+          <button onClick={() => setTab("employees")}>Employees</button>
+          <button onClick={() => setTab("master")}>Master Data</button>
+        </nav>
       </aside>
 
       <main className="main">
-        <header className="topbar">
-          <h2>Inventory Dashboard</h2>
-        </header>
 
-        <section className="kpi-row">
-          <Card label="Products" value={kpis.totalProducts} />
-          <Card label="Suppliers" value={kpis.totalSuppliers} />
-          <Card label="Stock Units" value={kpis.totalUnits} />
-          <Card label="Transactions" value={kpis.totalTransactions} />
-        </section>
+        {/* DASHBOARD */}
+        {tab === "dashboard" && (
+          <>
+            <header className="topbar">
+              <h2>Inventory Dashboard</h2>
+            </header>
 
-        <section className="layout-2col">
-          <div className="col">
-            <div className="panel">
-              <h2>Stock by Warehouse</h2>
-              <div style={{ width: "100%", height: 220 }}>
-                <ResponsiveContainer>
+            <section className="kpi-row">
+              <Card label="Products" value={kpis.totalProducts} />
+              <Card label="Suppliers" value={kpis.totalSuppliers} />
+              <Card label="Stock Units" value={kpis.totalUnits} />
+              <Card label="Transactions" value={kpis.totalTransactions} />
+            </section>
+
+            <section className="layout-2col">
+              <div className="panel">
+                <h2>Stock by Warehouse</h2>
+                <ResponsiveContainer height={220}>
                   <BarChart data={inventoryByWarehouse}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="location" />
                     <YAxis />
                     <Tooltip />
-                    <Bar dataKey="quantity" fill="#2563eb" />
+                    <Bar dataKey="quantity" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
-            </div>
-          </div>
-          <div className="col">
-            <div className="panel">
-              <h2>Daily Movements</h2>
-              <div style={{ width: "100%", height: 220 }}>
-                <ResponsiveContainer>
+
+              <div className="panel">
+                <h2>Daily Movements</h2>
+                <ResponsiveContainer height={220}>
                   <LineChart data={transactionsByDate}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="date" />
                     <YAxis />
                     <Tooltip />
                     <Legend />
-                    <Line type="monotone" dataKey="inQty" name="Inward Qty" stroke="#16a34a" />
-                    <Line type="monotone" dataKey="outQty" name="Outward Qty" stroke="#dc2626" />
+                    <Line dataKey="inQty" />
+                    <Line dataKey="outQty" />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-            </div>
-          </div>
-        </section>
+            </section>
+          </>
+        )}
 
-        <section className="layout-2col">
-          <div className="col">
-            <div className="panel">
-              <h2>Inventory by Warehouse</h2>
-              <Table
-                columns={["product_name", "location", "quantity"]}
-                rows={inventory}
-              />
-            </div>
-          </div>
-          <div className="col">
-            <StockMovementForm
-              products={products}
-              warehouses={warehouses}
-              employees={employees}
+        {/* PRODUCTS */}
+        {tab === "products" && (
+          <div className="panel">
+            <h2>Products</h2>
+            <Table
+              columns={["product_name", "category_name", "supplier_name", "unit_price"]}
+              rows={productsDetailed}
             />
+          </div>
+        )}
 
-            <div className="panel" style={{ marginTop: "1rem" }}>
-              <h2>Recent Transactions</h2>
-              <Table
-                columns={[
-                  "transaction_date",
-                  "transaction_type",
-                  "product_name",
-                  "location",
-                  "quantity",
-                  "employee_name",
-                ]}
-                rows={transactions.slice(0, 10)}
-              />
+        {/* EMPLOYEES */}
+        {tab === "employees" && (
+          <div className="panel">
+            <h2>Employees</h2>
+            <Table
+              columns={[
+                "name",
+                "role_name",
+                "employee_type",
+                "monthly_salary",
+                "benefits",
+                "hourly_rate",
+                "contract_end_date",
+              ]}
+              rows={employeesDetailed}
+            />
+          </div>
+        )}
+
+        {/* MASTER DATA */}
+        {tab === "master" && (
+          <div className="layout-2col">
+            <div className="panel">
+              <h2>Categories</h2>
+              <Table columns={["category_id", "category_name"]} rows={categories} />
+            </div>
+
+            <div className="panel">
+              <h2>Roles</h2>
+              <Table columns={["role_id", "role_name"]} rows={roles} />
             </div>
           </div>
-        </section>
+        )}
 
-        <section className="layout-3col">
-          <SimpleCreateForm
-            title="Add Supplier"
-            endpoint="/suppliers"
-            fields={[
-              { name: "supplier_name", label: "Supplier Name", required: true },
-              { name: "contact_email", label: "Email" },
-              { name: "phone_number", label: "Phone" },
-            ]}
-          />
-          <SimpleCreateForm
-            title="Add Product"
-            endpoint="/products"
-            fields={[
-              { name: "product_name", label: "Product Name", required: true },
-              { name: "supplier_id", label: "Supplier ID", required: true },
-              { name: "category_id", label: "Category ID", type: "select", required: true,
-                options: categories.map(c => ({ value: c.category_id, label: c.category_name }))
-              }
-            ]}
-          />
-          <SimpleCreateForm
-            title="Add Employee"
-            endpoint="/employees"
-            fields={[
-              { name: "name", label: "Name", required: true },
-              { name: "role_id", label: "Role", type: "select", required: true,
-                options: roles.map(r => ({ value: r.role_id, label: r.role_name}))
-              }
-            ]}
-          />
-        </section>
       </main>
     </div>
   );
