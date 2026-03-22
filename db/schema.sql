@@ -10,11 +10,16 @@ CREATE TABLE Supplier (
     phone_number VARCHAR(20)
 );
 
+CREATE TABLE Category (
+    category_id INT PRIMARY KEY AUTO_INCREMENT,
+    category_name VARCHAR(50) UNIQUE NOT NULL
+);
+
 CREATE TABLE Product (
     product_id INT PRIMARY KEY AUTO_INCREMENT,
     product_name VARCHAR(100) NOT NULL,
     supplier_id INT NOT NULL,
-    category VARCHAR(50),
+    category_id INT,
     unit_price DECIMAL(10,2),
     FOREIGN KEY (supplier_id) REFERENCES Supplier(supplier_id)
 );
@@ -34,10 +39,15 @@ CREATE TABLE Inventory (
     FOREIGN KEY (warehouse_id) REFERENCES Warehouse(warehouse_id)
 );
 
+CREATE TABLE Role (
+    role_id INT PRIMARY KEY AUTO_INCREMENT,
+    role_name VARCHAR(50) UNIQUE NOT NULL
+);
+
 CREATE TABLE Employee (
     employee_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100),
-    role VARCHAR(50)
+    role_id INT
 );
 
 CREATE TABLE Permanent_Employee (

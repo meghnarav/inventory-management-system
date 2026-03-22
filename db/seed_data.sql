@@ -27,12 +27,18 @@ INSERT INTO Warehouse (warehouse_id, location, capacity) VALUES
 (5,'Delhi',9000);
 
 -- 3. CORE EMPLOYEES
-INSERT INTO Employee (employee_id, name, role) VALUES
-(1,'Sanya Malhotra','Manager'),
-(2,'Smriti Mandanna','Supervisor'),
-(3,'Shreyas Iyer','Operator'),
-(4,'Shahid Kapoor','Operator'),
-(5,'Madhavan Ranganathan','Warehouse Staff');
+INSERT INTO Role (role_id, role_name) VALUES
+(1,'Manager'),
+(2,'Supervisor'),
+(3,'Operator'),
+(4,'Warehouse Staff');
+
+INSERT INTO Employee (employee_id, name, role_id) VALUES
+(1,'Sanya Malhotra',1),
+(2,'Smriti Mandanna',2),
+(3,'Shreyas Iyer',3),
+(4,'Shahid Kapoor',3),
+(5,'Madhavan Ranganathan',4);
 
 INSERT INTO Permanent_Employee (employee_id, monthly_salary, benefits) VALUES
 (1,60000,'Health Insurance'),
@@ -44,17 +50,23 @@ INSERT INTO Contract_Employee (employee_id, hourly_rate, contract_end_date) VALU
 (5,300,'2026-09-30');
 
 -- 4. 10 KEY PRODUCTS
-INSERT INTO Product (product_id, product_name, supplier_id, category, unit_price) VALUES
-(1,'Vanilla Ice Cream',1,'Ice Cream',120),
-(2,'Chocolate Ice Cream',2,'Ice Cream',130),
-(3,'Strawberry Ice Cream',3,'Ice Cream',125),
-(4,'Mango Sorbet',4,'Sorbet',110),
-(5,'Blueberry Gelato',5,'Gelato',150),
-(6,'Butterscotch Cone',1,'Ice Cream',140),
-(7,'Pistachio Kulfi',2,'Traditional',160),
-(8,'Cookie Crumble',3,'Ice Cream',170),
-(9,'Mint Choco Chip',4,'Ice Cream',135),
-(10,'Coffee Gelato',5,'Gelato',155);
+INSERT INTO Category (category_id, category_name) VALUES
+(1,'Ice Cream'),
+(2,'Sorbet'),
+(3,'Gelato'),
+(4,'Traditional');
+
+INSERT INTO Product (product_id, product_name, supplier_id, category_id, unit_price) VALUES
+(1,'Vanilla Ice Cream',1,1,120),
+(2,'Chocolate Ice Cream',2,1,130),
+(3,'Strawberry Ice Cream',3,1,125),
+(4,'Mango Sorbet',4,2,110),
+(5,'Blueberry Gelato',5,3,150),
+(6,'Butterscotch Cone',1,1,140),
+(7,'Pistachio Kulfi',2,4,160),
+(8,'Cookie Crumble',3,1,170),
+(9,'Mint Choco Chip',4,1,135),
+(10,'Coffee Gelato',5,3,155);
 
 -- 5. CONCENTRATED INVENTORY
 INSERT INTO Inventory (product_id, warehouse_id, quantity) VALUES
