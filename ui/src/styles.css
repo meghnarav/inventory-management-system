@@ -38,16 +38,6 @@ body {
   padding: 1.5rem 2rem;
 }
 
-.nav button {
-  display: block;
-  width: 100%;
-  margin: 6px 0;
-  padding: 8px;
-  background: none;
-  border: 1px solid #ccc;
-  cursor: pointer;
-}
-
 .topbar {
   display: flex;
   justify-content: space-between;
