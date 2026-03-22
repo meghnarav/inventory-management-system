@@ -28,12 +28,13 @@ def fetch_products():
             """
             SELECT p.product_id,
                    p.product_name,
-                   p.category,
+                   c.category_name,
                    p.unit_price,
                    p.supplier_id,
                    s.supplier_name
             FROM Product p
             JOIN Supplier s ON p.supplier_id = s.supplier_id
+            JOIN Category c ON p.category_id = c.category_id
             """
         )
         data = cursor.fetchall()
@@ -63,7 +64,15 @@ def fetch_employees():
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT employee_id, name, role FROM Employee")
+        cursor.execute(
+            """
+            SELECT e.employee_id,
+                   e.name,
+                   r.role_name
+            FROM Employee e
+            JOIN Role r ON e.role_id = r.role_id
+            """
+        )
         data = cursor.fetchall()
         cursor.close()
         conn.close()
@@ -190,16 +199,16 @@ def delete_supplier(supplier_id):
         conn.close()
 
 
-def create_product(name, supplier_id, category=None, unit_price=None):
+def create_product(name, supplier_id, category_id=None, unit_price=None):
     conn = get_connection()
     cursor = conn.cursor()
     try:
         cursor.execute(
             """
-            INSERT INTO Product (product_name, supplier_id, category, unit_price)
+            INSERT INTO Product (product_name, supplier_id, category_id, unit_price)
             VALUES (%s, %s, %s, %s)
             """,
-            (name, supplier_id, category, unit_price),
+            (name, supplier_id, category_id, unit_price),
         )
         conn.commit()
         return cursor.lastrowid
@@ -211,7 +220,7 @@ def create_product(name, supplier_id, category=None, unit_price=None):
         conn.close()
 
 
-def update_product(product_id, name, supplier_id, category=None, unit_price=None):
+def update_product(product_id, name, supplier_id, category_id=None, unit_price=None):
     conn = get_connection()
     cursor = conn.cursor()
     try:
@@ -220,11 +229,11 @@ def update_product(product_id, name, supplier_id, category=None, unit_price=None
             UPDATE Product
             SET product_name = %s,
                 supplier_id = %s,
-                category = %s,
+                category_id = %s,
                 unit_price = %s
             WHERE product_id = %s
             """,
-            (name, supplier_id, category, unit_price, product_id),
+            (name, supplier_id, category_id, unit_price, product_id),
         )
         conn.commit()
         return cursor.rowcount > 0
@@ -314,16 +323,16 @@ def delete_warehouse(warehouse_id):
         conn.close()
 
 
-def create_employee(name, role):
+def create_employee(name, role_id):
     conn = get_connection()
     cursor = conn.cursor()
     try:
         cursor.execute(
             """
-            INSERT INTO Employee (name, role)
+            INSERT INTO Employee (name, role_id)
             VALUES (%s, %s)
             """,
-            (name, role),
+            (name, role_id),
         )
         conn.commit()
         return cursor.lastrowid
@@ -335,7 +344,7 @@ def create_employee(name, role):
         conn.close()
 
 
-def update_employee(employee_id, name, role):
+def update_employee(employee_id, name, role_id):
     conn = get_connection()
     cursor = conn.cursor()
     try:
@@ -343,10 +352,10 @@ def update_employee(employee_id, name, role):
             """
             UPDATE Employee
             SET name = %s,
-                role = %s
+                role_id = %s
             WHERE employee_id = %s
             """,
-            (name, role, employee_id),
+            (name, role_id, employee_id),
         )
         conn.commit()
         return cursor.rowcount > 0
