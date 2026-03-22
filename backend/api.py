@@ -82,7 +82,14 @@ def get_inventory() -> List[Dict[str, Any]]:
 def get_transactions() -> List[Dict[str, Any]]:
     return queries.fetch_stock_transactions()
 
+@app.get("/employees-detailed")
+def get_employees_detailed():
+    return queries.fetch_employees_detailed()
 
+
+@app.get("/products-detailed")
+def get_products_detailed():
+    return queries.fetch_products_detailed()
 
 
 # ---------------------- Supplier CRUD ---------------------- #

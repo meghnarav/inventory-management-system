@@ -279,23 +279,32 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <aside className="sidebar">
-        <h1>SWIMS</h1>
-        <p className="muted">Supplier-Warehouse Inventory Management</p>
-      </aside>
+      {/* ── TOP HEADER (replaces useless sidebar) ── */}
+      <header className="app-header">
+        <div className="app-header__brand">
+          <h1>SWIMS</h1>
+          <span className="muted">Supplier-Warehouse Inventory Management</span>
+        </div>
+        <nav className="app-header__nav">
+          <a href="#dashboard">Dashboard</a>
+          <a href="#inventory">Inventory</a>
+          <a href="#transactions">Transactions</a>
+          <a href="#manage">Manage</a>
+          <a href="#data">Data</a>
+        </nav>
+      </header>
 
       <main className="main">
-        <header className="topbar">
-          <h2>Inventory Dashboard</h2>
-        </header>
 
-        <section className="kpi-row">
-          <Card label="Products" value={kpis.totalProducts} />
-          <Card label="Suppliers" value={kpis.totalSuppliers} />
-          <Card label="Stock Units" value={kpis.totalUnits} />
+        {/* ── KPI CARDS ── */}
+        <section id="dashboard" className="kpi-row">
+          <Card label="Products"     value={kpis.totalProducts}     />
+          <Card label="Suppliers"    value={kpis.totalSuppliers}    />
+          <Card label="Stock Units"  value={kpis.totalUnits}        />
           <Card label="Transactions" value={kpis.totalTransactions} />
         </section>
 
+        {/* ── CHARTS ── */}
         <section className="layout-2col">
           <div className="col">
             <div className="panel">
@@ -313,6 +322,7 @@ export default function App() {
               </div>
             </div>
           </div>
+
           <div className="col">
             <div className="panel">
               <h2>Daily Movements</h2>
@@ -324,7 +334,7 @@ export default function App() {
                     <YAxis />
                     <Tooltip />
                     <Legend />
-                    <Line type="monotone" dataKey="inQty" name="Inward Qty" stroke="#16a34a" />
+                    <Line type="monotone" dataKey="inQty"  name="Inward Qty"  stroke="#16a34a" />
                     <Line type="monotone" dataKey="outQty" name="Outward Qty" stroke="#dc2626" />
                   </LineChart>
                 </ResponsiveContainer>
@@ -333,7 +343,8 @@ export default function App() {
           </div>
         </section>
 
-        <section className="layout-2col">
+        {/* ── INVENTORY TABLE + SUPPLIERS TABLE ── */}
+        <section id="inventory" className="layout-2col">
           <div className="col">
             <div className="panel">
               <h2>Inventory by Warehouse</h2>
@@ -343,14 +354,30 @@ export default function App() {
               />
             </div>
           </div>
+
+          <div className="col">
+            <div className="panel">
+              <h2>Suppliers</h2>
+              <Table
+                columns={["supplier_name", "contact_email", "phone_number"]}
+                rows={suppliers}
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* ── STOCK MOVEMENT FORM + RECENT TRANSACTIONS (full width) ── */}
+        <section id="transactions" className="layout-2col">
           <div className="col">
             <StockMovementForm
               products={products}
               warehouses={warehouses}
               employees={employees}
             />
+          </div>
 
-            <div className="panel" style={{ marginTop: "1rem" }}>
+          <div className="col">
+            <div className="panel">
               <h2>Recent Transactions</h2>
               <Table
                 columns={[
@@ -367,14 +394,15 @@ export default function App() {
           </div>
         </section>
 
-        <section className="layout-3col">
+        {/* ── ADD FORMS ── */}
+        <section id="manage" className="layout-3col">
           <SimpleCreateForm
             title="Add Supplier"
             endpoint="/suppliers"
             fields={[
               { name: "supplier_name", label: "Supplier Name", required: true },
               { name: "contact_email", label: "Email" },
-              { name: "phone_number", label: "Phone" },
+              { name: "phone_number",  label: "Phone" },
             ]}
           />
           <SimpleCreateForm
@@ -382,36 +410,33 @@ export default function App() {
             endpoint="/products"
             fields={[
               { name: "product_name", label: "Product Name", required: true },
-              { name: "supplier_id", label: "Supplier ID", required: true },
-              { name: "category_id", label: "Category ID", type: "select", required: true,
-                options: categories.map(c => ({ value: c.category_id, label: c.category_name }))
-              }
+              { name: "supplier_id",  label: "Supplier ID",  required: true },
+              {
+                name: "category_id", label: "Category ID", type: "select", required: true,
+                options: categories.map(c => ({ value: c.category_id, label: c.category_name })),
+              },
             ]}
           />
           <SimpleCreateForm
             title="Add Employee"
             endpoint="/employees"
             fields={[
-              { name: "name", label: "Name", required: true },
-              { name: "role_id", label: "Role", type: "select", required: true,
-                options: roles.map(r => ({ value: r.role_id, label: r.role_name}))
-              }
+              { name: "name",    label: "Name", required: true },
+              {
+                name: "role_id", label: "Role", type: "select", required: true,
+                options: roles.map(r => ({ value: r.role_id, label: r.role_name })),
+              },
             ]}
           />
         </section>
-        {/* ---------------- EXTRA DATA (3NF DISPLAY) ---------------- */}
 
-        <section className="layout-2col">
+        {/* ── DETAILED TABLES (3NF DISPLAY) ── */}
+        <section id="data" className="layout-2col">
           <div className="col">
             <div className="panel">
               <h2>Products (Detailed)</h2>
               <Table
-                columns={[
-                  "product_name",
-                  "category_name",
-                  "supplier_name",
-                  "unit_price",
-                ]}
+                columns={["product_name", "category_name", "supplier_name", "unit_price"]}
                 rows={productsDetailed}
               />
             </div>

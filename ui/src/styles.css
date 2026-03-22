@@ -1,3 +1,4 @@
+/* ── Reset ── */
 *,
 *::before,
 *::after {
@@ -11,40 +12,71 @@ body {
   color: #111827;
 }
 
+/* ── App shell: column layout (header on top, main below) ── */
 .app-shell {
   display: flex;
+  flex-direction: column;
   min-height: 100vh;
 }
 
-.sidebar {
-  width: 260px;
-  padding: 2rem 1.5rem;
+/* ── Sticky top header ── */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 60px;
   background: #111827;
   color: #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
-.sidebar h1 {
-  margin: 0 0 0.5rem;
-  font-size: 1.8rem;
+.app-header__brand {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
 }
 
-.sidebar .muted {
-  font-size: 0.85rem;
+.app-header__brand h1 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+
+.app-header__brand .muted {
+  font-size: 0.8rem;
   color: #9ca3af;
 }
 
+.app-header__nav {
+  display: flex;
+  gap: 1.75rem;
+}
+
+.app-header__nav a {
+  color: #9ca3af;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.15s;
+}
+
+.app-header__nav a:hover {
+  color: #fff;
+}
+
+/* ── Main content area ── */
 .main {
   flex: 1;
   padding: 1.5rem 2rem;
 }
 
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
+/* ── KPI cards ── */
 .kpi-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -72,9 +104,10 @@ body {
   font-weight: 600;
 }
 
+/* ── Grid layouts ── */
 .layout-2col {
   display: grid;
-  grid-template-columns: 2fr 3fr;
+  grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
   margin-bottom: 1.5rem;
 }
@@ -86,6 +119,7 @@ body {
   margin-bottom: 1.5rem;
 }
 
+/* ── Panel ── */
 .panel {
   background: white;
   border-radius: 0.75rem;
@@ -94,10 +128,13 @@ body {
 }
 
 .panel h2 {
-  margin-top: 0;
-  font-size: 1.1rem;
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
 }
 
+/* ── Tables ── */
 .table-wrapper {
   width: 100%;
   overflow-x: auto;
@@ -106,7 +143,7 @@ body {
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
 }
 
 thead {
@@ -115,21 +152,27 @@ thead {
 
 th,
 td {
-  padding: 0.4rem 0.5rem;
+  padding: 0.4rem 0.6rem;
   border-bottom: 1px solid #e5e7eb;
   text-align: left;
+  white-space: nowrap;
 }
 
 th {
   font-weight: 600;
   color: #4b5563;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
+/* ── Utility ── */
 .muted {
   color: #6b7280;
   font-size: 0.85rem;
 }
 
+/* ── Forms ── */
 .form {
   display: flex;
   flex-direction: column;
@@ -155,26 +198,29 @@ button {
 
 input,
 select {
-  padding: 0.4rem 0.5rem;
+  padding: 0.4rem 0.6rem;
   border-radius: 0.45rem;
   border: 1px solid #d1d5db;
+  width: 100%;
 }
 
 input:focus,
 select:focus {
   outline: none;
   border-color: #2563eb;
-  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
 
 button {
   align-self: flex-start;
-  padding: 0.45rem 0.9rem;
+  padding: 0.45rem 1rem;
   border-radius: 0.45rem;
   border: none;
   background: #2563eb;
   color: white;
   cursor: pointer;
+  font-weight: 500;
+  transition: background 0.15s;
 }
 
 button:hover {
@@ -187,17 +233,21 @@ button:hover {
   color: #059669;
 }
 
+/* ── Responsive ── */
 @media (max-width: 960px) {
-  .app-shell {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    width: 100%;
+  .app-header__nav {
+    display: none; /* hide nav links on small screens */
   }
 
   .layout-2col {
     grid-template-columns: 1fr;
   }
-}
 
+  .layout-3col {
+    grid-template-columns: 1fr;
+  }
+
+  .main {
+    padding: 1rem;
+  }
+}

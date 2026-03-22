@@ -133,6 +133,63 @@ def fetch_stock_transactions():
     except Exception:
         return []
 
+def fetch_employees_detailed():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute("""
+            SELECT e.employee_id,
+                   e.name,
+                   r.role_name,
+                   CASE
+                       WHEN pe.employee_id IS NOT NULL THEN 'Permanent'
+                       WHEN ce.employee_id IS NOT NULL THEN 'Contract'
+                   END AS employee_type,
+                   pe.monthly_salary,
+                   pe.benefits,
+                   ce.hourly_rate,
+                   ce.contract_end_date
+            FROM Employee e
+            JOIN Role r ON e.role_id = r.role_id
+            LEFT JOIN Permanent_Employee pe ON e.employee_id = pe.employee_id
+            LEFT JOIN Contract_Employee ce ON e.employee_id = ce.employee_id
+        """)
+
+        data = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return data
+    except Exception as e:
+        print("ERROR:", e)
+        return []
+    
+def fetch_products_detailed():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute("""
+            SELECT p.product_id,
+                   p.product_name,
+                   c.category_name,
+                   p.unit_price,
+                   s.supplier_name
+            FROM Product p
+            JOIN Supplier s ON p.supplier_id = s.supplier_id
+            JOIN Category c ON p.category_id = c.category_id
+        """)
+
+        data = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return data
+    except Exception as e:
+        print("ERROR:", e)
+        return []
+    
+
+
 
 # ---------------------------------------------------------------------------
 # Write helpers - CRUD
