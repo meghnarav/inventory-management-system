@@ -158,6 +158,8 @@ body {
 .table-wrapper {
   width: 100%;
   overflow-x: auto;
+  overflow-y: auto;
+  max-height: 320px;
 }
 
 table {
@@ -168,6 +170,9 @@ table {
 
 thead {
   background: #f9fafb;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 th,
