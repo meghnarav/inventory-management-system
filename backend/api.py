@@ -92,6 +92,38 @@ def get_products_detailed():
     return queries.fetch_products_detailed()
 
 
+# ---------------------- Inventory CRUD ---------------------- #
+# Add after the existing GET /inventory endpoint
+
+
+@app.post("/inventory", status_code=201)
+def create_inventory(payload: Dict[str, Any]) -> Dict[str, Any]:
+    product_id   = payload.get("product_id")
+    warehouse_id = payload.get("warehouse_id")
+    quantity     = payload.get("quantity", 0)
+    if not product_id or not warehouse_id:
+        raise HTTPException(status_code=400, detail="product_id and warehouse_id are required")
+    ok = queries.create_inventory(product_id, warehouse_id, quantity)
+    if not ok:
+        raise HTTPException(status_code=500, detail="Failed to create inventory record")
+    return {"ok": True}
+
+
+@app.put("/inventory/{product_id}/{warehouse_id}")
+def update_inventory(product_id: int, warehouse_id: int, payload: Dict[str, Any]) -> Dict[str, Any]:
+    quantity = payload.get("quantity")
+    if quantity is None:
+        raise HTTPException(status_code=400, detail="quantity is required")
+    ok = queries.update_inventory(product_id, warehouse_id, quantity)
+    _ensure_found(ok, "Inventory")
+    return {"ok": True}
+
+
+@app.delete("/inventory/{product_id}/{warehouse_id}", status_code=204)
+def delete_inventory(product_id: int, warehouse_id: int) -> None:
+    ok = queries.delete_inventory(product_id, warehouse_id)
+    _ensure_found(ok, "Inventory")
+
 # ---------------------- Supplier CRUD ---------------------- #
 
 

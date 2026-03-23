@@ -511,3 +511,48 @@ def add_stock_movement(prod_id, wh_id, emp_id, qty, t_type):
     finally:
         cursor.close()
         conn.close()
+
+# ── Add these to queries.py ──
+
+
+def create_inventory(product_id: int, warehouse_id: int, quantity: int) -> bool:
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO Inventory (product_id, warehouse_id, quantity)
+                VALUES (%s, %s, %s)
+                ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)
+                """,
+                (product_id, warehouse_id, quantity),
+            )
+        conn.commit()
+    return True
+
+
+def update_inventory(product_id: int, warehouse_id: int, quantity: int) -> bool:
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                UPDATE Inventory
+                SET quantity = %s
+                WHERE product_id = %s AND warehouse_id = %s
+                """,
+                (quantity, product_id, warehouse_id),
+            )
+            updated = cur.rowcount
+        conn.commit()
+    return updated > 0
+
+
+def delete_inventory(product_id: int, warehouse_id: int) -> bool:
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "DELETE FROM Inventory WHERE product_id = %s AND warehouse_id = %s",
+                (product_id, warehouse_id),
+            )
+            deleted = cur.rowcount
+        conn.commit()
+    return deleted > 0
