@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Bar, BarChart, CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis, ResponsiveContainer, Legend } from "recharts";
-import AddEmployeeForm from "./AddEmployeeForm";
+import AddEmployeeForm from "./AddEmployeeForm.jsx";
 
 const API_BASE = "http://127.0.0.1:8000";
 
