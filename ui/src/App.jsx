@@ -281,222 +281,221 @@ export default function App() {
   return (
   <div className="app-shell">
 
-    {/* ── TOP HEADER (replaces useless sidebar) ── */}
-    <header className="app-header">
-      <div className="app-header__brand">
-        <h1>SWIMS</h1>
-        <span className="muted">Supplier-Warehouse Inventory Management</span>
-      </div>
-      <nav className="app-header__nav">
-        <a href="#dashboard">Dashboard</a>
-        <a href="#inventory">Inventory</a>
-        <a href="#transactions">Transactions</a>
-        <a href="#manage">Manage</a>
-        <a href="#data">Data</a>
-      </nav>
-    </header>
-
-    <main className="main">
-
-      {/* ── KPI CARDS ── */}
-      <div id="dashboard" className="section">
-        <p className="section-title">Overview</p>
-        <div className="kpi-row">
-          <Card label="Products"     value={kpis.totalProducts}     />
-          <Card label="Suppliers"    value={kpis.totalSuppliers}    />
-          <Card label="Stock Units"  value={kpis.totalUnits}        />
-          <Card label="Transactions" value={kpis.totalTransactions} />
+      {/* ── TOP HEADER (replaces useless sidebar) ── */}
+      <header className="app-header">
+        <div className="app-header__brand">
+          <h1>SWIMS</h1>
+          <span className="muted">Supplier-Warehouse Inventory Management</span>
         </div>
-      </div>
+        <nav className="app-header__nav">
+          <a href="#dashboard">Dashboard</a>
+          <a href="#inventory">Inventory</a>
+          <a href="#transactions">Transactions</a>
+          <a href="#manage">Manage</a>
+          <a href="#data">Data</a>
+        </nav>
+      </header>
 
-      {/* ── CHARTS ── */}
-      <div className="section">
-        <p className="section-title">Analytics</p>
-        <section className="layout-2col">
-        <div className="col">
-          <div className="panel">
-            <h2>Stock by Warehouse</h2>
-            <div style={{ width: "100%", height: 220 }}>
-              <ResponsiveContainer>
-                <BarChart data={inventoryByWarehouse}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="location" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="quantity" fill="#2563eb" />
-                </BarChart>
-              </ResponsiveContainer>
+      <main className="main">
+
+        {/* ── KPI CARDS ── */}
+        <div id="dashboard" className="section">
+          <p className="section-title">Overview</p>
+          <div className="kpi-row">
+            <Card label="Products"     value={kpis.totalProducts}     />
+            <Card label="Suppliers"    value={kpis.totalSuppliers}    />
+            <Card label="Stock Units"  value={kpis.totalUnits}        />
+            <Card label="Transactions" value={kpis.totalTransactions} />
+          </div>
+        </div>
+
+        {/* ── CHARTS ── */}
+        <div className="section">
+          <p className="section-title">Analytics</p>
+          <section className="layout-2col">
+          <div className="col">
+            <div className="panel">
+              <h2>Stock by Warehouse</h2>
+              <div style={{ width: "100%", height: 220 }}>
+                <ResponsiveContainer>
+                  <BarChart data={inventoryByWarehouse}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="location" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="quantity" fill="#2563eb" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="col">
-          <div className="panel">
-            <h2>Daily Movements</h2>
-            <div style={{ width: "100%", height: 220 }}>
-              <ResponsiveContainer>
-                <LineChart data={transactionsByDate}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="inQty"  name="Inward Qty"  stroke="#16a34a" />
-                  <Line type="monotone" dataKey="outQty" name="Outward Qty" stroke="#dc2626" />
-                </LineChart>
-              </ResponsiveContainer>
+          <div className="col">
+            <div className="panel">
+              <h2>Daily Movements</h2>
+              <div style={{ width: "100%", height: 220 }}>
+                <ResponsiveContainer>
+                  <LineChart data={transactionsByDate}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="date" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Line type="monotone" dataKey="inQty"  name="Inward Qty"  stroke="#16a34a" />
+                    <Line type="monotone" dataKey="outQty" name="Outward Qty" stroke="#dc2626" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
-      </div>
-
-      {/* ── INVENTORY TABLE + SUPPLIERS TABLE ── */}
-      <div id="inventory" className="section">
-        <p className="section-title">Inventory</p>
-        <section className="layout-2col">
-        <div className="col">
-          <div className="panel">
-            <h2>Inventory by Warehouse</h2>
-            <Table
-              columns={["product_name", "location", "quantity"]}
-              rows={inventory}
-            />
-          </div>
-        </div>
-
-        <div className="col">
-          <div className="panel">
-            <h2>Suppliers</h2>
-            <Table
-              columns={["supplier_name", "contact_email", "phone_number"]}
-              rows={suppliers}
-            />
-          </div>
-        </div>
-      </section>
-      </div>
-
-      {/* ── STOCK MOVEMENT FORM + RECENT TRANSACTIONS ── */}
-      <div id="transactions" className="section">
-        <p className="section-title">Transactions</p>
-        <section className="layout-2col">
-        <div className="col">
-          <StockMovementForm
-            products={products}
-            warehouses={warehouses}
-            employees={employees}
-          />
-        </div>
-
-        <div className="col">
-          <div className="panel">
-            <h2>Recent Transactions</h2>
-            <Table
-              columns={[
-                "transaction_date",
-                "transaction_type",
-                "product_name",
-                "location",
-                "quantity",
-                "employee_name",
-              ]}
-              rows={transactions.slice(0, 10)}
-            />
-          </div>
-        </div>
-      </section>
-      </div>
-
-      {/* ── ADD FORMS ── */}
-      <div id="manage" className="section">
-        <p className="section-title">Manage</p>
-        <section className="layout-3col">
-        <SimpleCreateForm
-          title="Add Supplier"
-          endpoint="/suppliers"
-          fields={[
-            { name: "supplier_name", label: "Supplier Name", required: true },
-            { name: "contact_email", label: "Email" },
-            { name: "phone_number",  label: "Phone" },
-          ]}
-        />
-        <SimpleCreateForm
-          title="Add Product"
-          endpoint="/products"
-          fields={[
-            { name: "product_name", label: "Product Name", required: true },
-            { name: "supplier_id",  label: "Supplier ID",  required: true },
-            {
-              name: "category_id", label: "Category ID", type: "select", required: true,
-              options: categories.map(c => ({ value: c.category_id, label: c.category_name })),
-            },
-          ]}
-        />
-        <AddEmployeeForm
-          roles={roles}
-          onSuccess={() => fetchData()}
-        />
         </section>
-      </div>
+        </div>
 
-      {/* ── DETAILED TABLES (3NF DISPLAY) ── */}
-      <div id="data" className="section">
-        <p className="section-title">Data</p>
+        {/* ── INVENTORY TABLE + SUPPLIERS TABLE ── */}
+        <div id="inventory" className="section">
+          <p className="section-title">Inventory</p>
+          <section className="layout-2col">
+          <div className="col">
+            <div className="panel">
+              <h2>Inventory by Warehouse</h2>
+              <Table
+                columns={["product_name", "location", "quantity"]}
+                rows={inventory}
+              />
+            </div>
+          </div>
+
+          <div className="col">
+            <div className="panel">
+              <h2>Suppliers</h2>
+              <Table
+                columns={["supplier_name", "contact_email", "phone_number"]}
+                rows={suppliers}
+              />
+            </div>
+          </div>
+        </section>
+        </div>
+
+        {/* ── STOCK MOVEMENT FORM + RECENT TRANSACTIONS ── */}
+        <div id="transactions" className="section">
+          <p className="section-title">Transactions</p>
+          <section className="layout-2col">
+          <div className="col">
+            <StockMovementForm
+              products={products}
+              warehouses={warehouses}
+              employees={employees}
+            />
+          </div>
+
+          <div className="col">
+            <div className="panel">
+              <h2>Recent Transactions</h2>
+              <Table
+                columns={[
+                  "transaction_date",
+                  "transaction_type",
+                  "product_name",
+                  "location",
+                  "quantity",
+                  "employee_name",
+                ]}
+                rows={transactions.slice(0, 10)}
+              />
+            </div>
+          </div>
+        </section>
+        </div>
+
+        {/* ── ADD FORMS ── */}
+        <div id="manage" className="section">
+          <p className="section-title">Manage</p>
+          <section className="layout-3col">
+          <SimpleCreateForm
+            title="Add Supplier"
+            endpoint="/suppliers"
+            fields={[
+              { name: "supplier_name", label: "Supplier Name", required: true },
+              { name: "contact_email", label: "Email" },
+              { name: "phone_number",  label: "Phone" },
+            ]}
+          />
+          <SimpleCreateForm
+            title="Add Product"
+            endpoint="/products"
+            fields={[
+              { name: "product_name", label: "Product Name", required: true },
+              { name: "supplier_id",  label: "Supplier ID",  required: true },
+              {
+                name: "category_id", label: "Category ID", type: "select", required: true,
+                options: categories.map(c => ({ value: c.category_id, label: c.category_name })),
+              },
+            ]}
+          />
+          <AddEmployeeForm
+            roles={roles}
+            onSuccess={() => fetchData()}
+          />
+          </section>
+        </div>
+
+        {/* ── DETAILED TABLES (3NF DISPLAY) ── */}
+        <div id="data" className="section">
+          <p className="section-title">Data</p>
+          <section className="layout-2col">
+          <div className="col">
+            <div className="panel">
+              <h2>Products (Detailed)</h2>
+              <Table
+                columns={["product_name", "category_name", "supplier_name", "unit_price"]}
+                rows={productsDetailed}
+              />
+            </div>
+          </div>
+
+          <div className="col">
+            <div className="panel">
+              <h2>Permanent Employees</h2>
+              <Table
+                columns={["name", "role_name", "monthly_salary", "benefits"]}
+                rows={employeesDetailed.filter(e => e.employee_type === "Permanent")}
+              />
+            </div>
+            <div className="panel" style={{ marginTop: "1rem" }}>
+              <h2>Contract Employees</h2>
+              <Table
+                columns={["name", "role_name", "hourly_rate", "contract_end_date"]}
+                rows={employeesDetailed.filter(e => e.employee_type === "Contract")}
+              />
+            </div>
+          </div>
+        </section>
+
         <section className="layout-2col">
-        <div className="col">
-          <div className="panel">
-            <h2>Products (Detailed)</h2>
-            <Table
-              columns={["product_name", "category_name", "supplier_name", "unit_price"]}
-              rows={productsDetailed}
-            />
+          <div className="col">
+            <div className="panel">
+              <h2>Categories</h2>
+              <Table
+                columns={["category_id", "category_name"]}
+                rows={categories}
+              />
+            </div>
           </div>
+
+          <div className="col">
+            <div className="panel">
+              <h2>Roles</h2>
+              <Table
+                columns={["role_id", "role_name"]}
+                rows={roles}
+              />
+            </div>
+          </div>
+        </section>
         </div>
 
-        <div className="col">
-          <div className="panel">
-            <h2>Employees (Detailed)</h2>
-            <Table
-              columns={[
-                "name",
-                "role_name",
-                "employee_type",
-                "monthly_salary",
-                "benefits",
-                "hourly_rate",
-                "contract_end_date",
-              ]}
-              rows={employeesDetailed}
-            />
-          </div>
-        </div>
-      </section>
-
-      <section className="layout-2col">
-        <div className="col">
-          <div className="panel">
-            <h2>Categories</h2>
-            <Table
-              columns={["category_id", "category_name"]}
-              rows={categories}
-            />
-          </div>
-        </div>
-
-        <div className="col">
-          <div className="panel">
-            <h2>Roles</h2>
-            <Table
-              columns={["role_id", "role_name"]}
-              rows={roles}
-            />
-          </div>
-        </div>
-      </section>
-      </div>
-
-    </main>
-  </div>
+      </main>
+    </div>
 );
 }
