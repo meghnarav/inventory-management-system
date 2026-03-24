@@ -6,7 +6,7 @@ services:
     container_name: swims-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_ROOT_PASSWORD: rootpass
       MYSQL_DATABASE: swims
       MYSQL_USER: swims_user
       MYSQL_PASSWORD: swims_pass
