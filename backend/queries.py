@@ -433,6 +433,8 @@ def delete_employee(employee_id):
     conn = get_connection()
     cursor = conn.cursor()
     try:
+        cursor.execute("DELETE FROM Permanent_Employee WHERE employee_id=%s", (employee_id,))
+        cursor.execute("DELETE FROM Contract_Employee WHERE employee_id=%s", (employee_id,))
         cursor.execute("DELETE FROM Employee WHERE employee_id=%s", (employee_id,))
         conn.commit()
         return cursor.rowcount > 0
