@@ -72,11 +72,21 @@ export default function EmployeesPage({ employeesDetailed, roles, onRefresh }) {
   };
 
   const handleDelete = async (row) => {
-    try {
-      await fetch(`/employees/${row.employee_id}`, { method: "DELETE" });
+  try {
+    // Add the full backend URL (usually http://localhost:8000)
+    const res = await fetch(`http://localhost:8000/employees/${row.employee_id}`, { 
+      method: "DELETE" 
+    });
+
+    if (res.status === 204) {
       onRefresh();
-    } catch (e) { setStatus("❌ " + e.message); }
-  };
+    } else {
+      console.error("Delete failed with status:", res.status);
+    }
+  } catch (e) {
+    console.error("Network Error:", e);
+  }
+};
 
   const handleCancel = () => { setEditing(null); setForm(EMPTY_BASE); setSubForm(EMPTY_PERM); setStatus(""); };
 
