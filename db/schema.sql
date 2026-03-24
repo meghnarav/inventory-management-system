@@ -1,4 +1,3 @@
--- SWIMS Database
 DROP DATABASE IF EXISTS swims;
 CREATE DATABASE swims;
 USE swims;
@@ -21,8 +20,8 @@ CREATE TABLE Product (
     supplier_id  INT NOT NULL,
     category_id  INT NOT NULL,
     unit_price   DECIMAL(10,2) CHECK (unit_price >= 0),
-    FOREIGN KEY (supplier_id) REFERENCES Supplier(supplier_id),
-    FOREIGN KEY (category_id) REFERENCES Category(category_id)
+    FOREIGN KEY (supplier_id) REFERENCES Supplier(supplier_id) ON DELETE CASCADE,
+    FOREIGN KEY (category_id) REFERENCES Category(category_id) ON DELETE CASCADE
 );
 
 CREATE TABLE Warehouse (
@@ -36,8 +35,8 @@ CREATE TABLE Inventory (
     warehouse_id INT NOT NULL,
     quantity     INT DEFAULT 0 CHECK (quantity >= 0),
     PRIMARY KEY (product_id, warehouse_id),
-    FOREIGN KEY (product_id)   REFERENCES Product(product_id),
-    FOREIGN KEY (warehouse_id) REFERENCES Warehouse(warehouse_id)
+    FOREIGN KEY (product_id)   REFERENCES Product(product_id) ON DELETE CASCADE,
+    FOREIGN KEY (warehouse_id) REFERENCES Warehouse(warehouse_id) ON DELETE CASCADE
 );
 
 CREATE TABLE Role (
@@ -56,14 +55,14 @@ CREATE TABLE Permanent_Employee (
     employee_id    INT PRIMARY KEY,
     monthly_salary DECIMAL(10,2) CHECK (monthly_salary >= 0),
     benefits       VARCHAR(200),
-    FOREIGN KEY (employee_id) REFERENCES Employee(employee_id)
+    FOREIGN KEY (employee_id) REFERENCES Employee(employee_id) ON DELETE CASCADE
 );
 
 CREATE TABLE Contract_Employee (
     employee_id       INT PRIMARY KEY,
     hourly_rate       DECIMAL(10,2) CHECK (hourly_rate >= 0),
     contract_end_date DATE,
-    FOREIGN KEY (employee_id) REFERENCES Employee(employee_id)
+    FOREIGN KEY (employee_id) REFERENCES Employee(employee_id) ON DELETE CASCADE
 );
 
 CREATE TABLE Stock_Transaction (
@@ -74,7 +73,7 @@ CREATE TABLE Stock_Transaction (
     warehouse_id     INT NOT NULL,
     employee_id      INT NOT NULL,
     quantity         INT NOT NULL CHECK (quantity > 0),
-    FOREIGN KEY (product_id)   REFERENCES Product(product_id),
-    FOREIGN KEY (warehouse_id) REFERENCES Warehouse(warehouse_id),
-    FOREIGN KEY (employee_id)  REFERENCES Employee(employee_id)
+    FOREIGN KEY (product_id)   REFERENCES Product(product_id) ON DELETE CASCADE,
+    FOREIGN KEY (warehouse_id) REFERENCES Warehouse(warehouse_id) ON DELETE CASCADE,
+    FOREIGN KEY (employee_id)  REFERENCES Employee(employee_id) ON DELETE CASCADE
 );
