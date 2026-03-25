@@ -68,27 +68,29 @@ The database follows **Third Normal Form (3NF)**.
 
 ```
 inventory-management-system/
-│
-├── backend/
-│   ├── api.py
-│   ├── db_connection.py
-│   ├── queries.py
-│   └── __init__.py
-│
-├── db/
-│   ├── schema.sql
-│   └── seed_data.sql
-│
-├── ui/
+├── backend/                # FastAPI Application
+│   ├── api.py              # Main API entry point
+│   ├── db_connection.py    # Database connection logic
+│   ├── queries.py          # SQL query definitions
+│   └── __init__.py         # Python package marker
+├── db/                     # Database Scripts
+│   ├── schema.sql          # 3NF Table definitions
+│   └── seed_data.sql       # Initial mockup data
+├── ui/                     # React Frontend (Vite)
 │   ├── src/
-│   │   ├── App.jsx
-│   │   ├── main.jsx
-│   │   └── styles.css
-│   ├── index.html
-│   └── package.json
-│
-├── docker-compose.yml
-├── requirements.txt
+│   │   ├── pages/          # Individual View Components
+│   │   │   ├── Dashboard.jsx    # Stats, Bar Charts & Line Graphs
+│   │   │   ├── Inventory.jsx    # Stock levels by Warehouse
+│   │   │   ├── Products.jsx     # Product list & Supplier info
+│   │   │   ├── Transactions.jsx # Inward/Outward movement logs
+│   │   │   └── Employees.jsx    # Staff & Role management
+│   │   ├── App.jsx         # Main Component & Routing
+│   │   ├── main.jsx        # Frontend entry point
+│   │   └── styles.css      # Custom styling
+│   ├── index.html          # HTML Template
+│   └── package.json        # Frontend dependencies
+├── docker-compose.yml      # Orchestration for Services
+├── requirements.txt        # Python dependencies
 └── README.md
 ```
 
